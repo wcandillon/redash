@@ -97,3 +97,29 @@ Example usage:
 const progress = new Value(0);
 set(progress, loop({ duration: 400, easing: Easing.linear }));
 ```
+
+## `delayTiming()`
+
+```tsx
+interface DelayTimingParams {
+    from?: Animated.Adaptable<number>;
+    to?: Animated.Adaptable<number>;
+    duration?: Animated.Adaptable<number>;
+    delay?: Animated.Adaptable<number>;
+    easing?: Animated.EasingFunction;
+}
+const delayTiming: (params: DelayTimingParams) => Animated.Node<number>;
+```
+
+Convenience function to run a timing animation after certain amount of time.
+Example usage:
+
+```tsx
+delayTiming({
+  duration: 10 * 1000,
+  from: 0,
+  to: 1,
+  easing: Easing.linear,
+  delay: 1000
+});
+```

@@ -17,6 +17,8 @@ const {
   decay: reDecay,
   spring: reSpring,
   SpringUtils,
+  eq,
+  neq,
 } = Animated;
 
 const defaultSpringConfig = SpringUtils.makeDefaultConfig();
@@ -249,3 +251,96 @@ export const loop = (loopConfig: LoopProps) => {
     state.position,
   ]);
 };
+
+interface ResetParams {
+  state: Animated.TimingState;
+  from?: Animated.Adaptable<number>;
+  to?: Animated.Adaptable<number>;
+  config: Animated.TimingConfig;
+  clock: Animated.Clock;
+};
+const resetAndStart = (params: ResetParams) => {
+  const { state, from, to, config, clock } = { from: 0, to: 1, ...params };
+  return block([
+    set(state.finished, 0),
+    set(state.time, 0),
+    set(state.position, from),
+    set(state.frameTime, 0),
+    set(config.toValue, to),
+    startClock(clock),
+  ]);
+};
+
+const getTimingState = (): Animated.TimingState => ({
+  finished: new Value(0),
+  position: new Value(0),
+  frameTime: new Value(0),
+  time: new Value(0),
+});
+
+interface DelayTimingParams {
+  from?: Animated.Adaptable<number>;
+  to?: Animated.Adaptable<number>;
+  duration?: Animated.Adaptable<number>;
+  delay?: Animated.Adaptable<number>;
+  easing?: Animated.EasingFunction;
+};
+export default function delayTiming(params: DelayTimingParams) {
+  const { duration, from, to, delay, easing } = {
+    duration: 400,
+    from: 0,
+    to: 1,
+    delay: 0,
+    easing: Easing.linear,
+    ...params,
+  };
+
+  const clock = new Clock();
+  const state = getTimingState();
+  const config: Animated.TimingConfig = {
+    duration,
+    toValue: new Value(0),
+    easing,
+  };
+
+  const delayClock = new Clock();
+  const delayState = getTimingState();
+
+  const delayConfig: Animated.TimingConfig = {
+    duration: delay,
+    toValue: new Value(1),
+    easing: Easing.linear,
+  };
+
+  return cond(
+    neq(delay, 0),
+    [
+      cond(
+        and(eq(delayState.finished, 0), not(clockRunning(delayClock))),
+        resetAndStart({
+          state: delayState,
+          clock: delayClock,
+          config: delayConfig,
+        }),
+      ),
+      reTiming(delayClock, delayState, delayConfig),
+      cond(delayState.finished, stopClock(delayClock)),
+      cond(
+        and(eq(delayState.finished, 1), not(clockRunning(clock))),
+        resetAndStart({ state, clock, config, from, to }),
+      ),
+      reTiming(clock, state, config),
+      cond(state.finished, stopClock(clock)),
+      cond(delayState.finished, state.position, from),
+    ],
+    [
+      cond(
+        not(clockRunning(clock)),
+        resetAndStart({ state, clock, config, from, to }),
+      ),
+      reTiming(clock, state, config),
+      cond(state.finished, stopClock(clock)),
+      state.position,
+    ],
+  );
+}
