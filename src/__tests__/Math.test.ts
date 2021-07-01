@@ -8,6 +8,10 @@ import {
   toRad,
   toDeg,
   cubicBezierYForX,
+  dist,
+  approximates,
+  step,
+  smoothstep,
 } from "../Math";
 import { vec } from "../Vectors";
 
@@ -73,4 +77,27 @@ test("cubicBezierYForX2()", () => {
   const c = vec.create(204, 223);
   const d = vec.create(227, 89);
   expect(Math.round(cubicBezierYForX(x, a, b, c, d))).toBe(y);
+});
+
+test("dist()", () => {
+  const v1 = { x: 0, y: 0 };
+  const v2 = { x: 100, y: 100 };
+  expect(dist(v1, v2)).toBe(Math.sqrt(100 ** 2 + 100 ** 2));
+});
+
+test("approximates()", () => {
+  expect(approximates(1, 1)).toBe(true);
+  expect(approximates(1, 1.001)).toBe(true);
+  expect(approximates(1, 1.0011)).toBe(false);
+  expect(approximates(1, 2, 1)).toBe(true);
+});
+
+test("step()", () => {
+  expect(step(1.5, 1)).toBe(1);
+  expect(step(0.5, 1)).toBe(0);
+});
+
+test("smoothstep()", () => {
+  expect(smoothstep(1.5, 1, 2)).toBe(0.5);
+  expect(smoothstep(0.5, 1, 2)).toBe(0);
 });

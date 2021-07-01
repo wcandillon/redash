@@ -11,6 +11,27 @@ export const bin = (value: boolean): 0 | 1 => {
 };
 
 /**
+ * @summary generate a step function by comparing two values
+ * @worklet
+ */
+export const step = (value: number, edge: number) => {
+  "worklet";
+  return value < edge ? 0 : 1;
+};
+
+/**
+ * @summary Perform Hermite interpolation between two values
+ * @worklet
+ */
+export const smoothstep = (value: number, edge0: number, edge1: number) => {
+  "worklet";
+  // Scale, bias and saturate x to 0..1 range
+  const x = clamp((value - edge0) / (edge1 - edge0), 0, 1);
+  // Evaluate polynomial
+  return x * x * (3 - 2 * x);
+};
+
+/**
  * Linear interpolation
  * @param value
  * @param x
@@ -217,4 +238,22 @@ export const cubicBezierYForX = (
     .map((root) => round(root, precision))
     .filter((root) => root >= 0 && root <= 1)[0];
   return cubicBezier(t, a.y, b.y, c.y, d.y);
+};
+
+/**
+ * @summary Euclidean distance between two vectors
+ * @worklet
+ */
+export const dist = (v1: Vector, v2: Vector) => {
+  "worklet";
+  return Math.sqrt((v1.x - v2.x) ** 2 + (v1.y - v2.y) ** 2);
+};
+
+/**
+ * @summary Returns true if a approximates b. Default precision is 0.001
+ * @worklet
+ */
+export const approximates = (a: number, b: number, precision = 0.001) => {
+  "worklet";
+  return Math.abs(a - b) <= precision;
 };
