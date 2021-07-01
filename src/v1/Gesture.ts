@@ -1,16 +1,16 @@
-import Animated, { diff, lessThan, or } from "react-native-reanimated";
-import {
-  FlingGestureHandlerEventExtra,
-  ForceTouchGestureHandlerEventExtra,
-  GestureHandlerStateChangeNativeEvent,
-  LongPressGestureHandlerEventExtra,
-  PanGestureHandlerEventExtra,
-  PinchGestureHandlerEventExtra,
-  RotationGestureHandlerEventExtra,
-  State,
-  TapGestureHandlerEventExtra,
-} from "react-native-gesture-handler";
 import { Platform } from "react-native";
+import {
+  FlingGestureHandlerEventPayload,
+  ForceTouchGestureHandlerEventPayload,
+  GestureHandlerStateChangeNativeEvent,
+  LongPressGestureHandlerEventPayload,
+  PanGestureHandlerEventPayload,
+  PinchGestureHandlerEventPayload,
+  RotationGestureHandlerEventPayload,
+  State,
+  TapGestureHandlerEventPayload,
+} from "react-native-gesture-handler";
+import Animated, { diff, lessThan, or } from "react-native-reanimated";
 
 import { snapPoint } from "./Animations";
 import { vec } from "./Vectors";
@@ -225,13 +225,13 @@ export const onScrollEvent = (contentOffset: {
 
 type NativeEvent = GestureHandlerStateChangeNativeEvent &
   (
-    | PanGestureHandlerEventExtra
-    | TapGestureHandlerEventExtra
-    | LongPressGestureHandlerEventExtra
-    | RotationGestureHandlerEventExtra
-    | FlingGestureHandlerEventExtra
-    | PinchGestureHandlerEventExtra
-    | ForceTouchGestureHandlerEventExtra
+    | PanGestureHandlerEventPayload
+    | TapGestureHandlerEventPayload
+    | LongPressGestureHandlerEventPayload
+    | RotationGestureHandlerEventPayload
+    | FlingGestureHandlerEventPayload
+    | PinchGestureHandlerEventPayload
+    | ForceTouchGestureHandlerEventPayload
   );
 
 type Adaptable<T> = { [P in keyof T]: Animated.Adaptable<T[P]> };
