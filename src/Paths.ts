@@ -418,3 +418,36 @@ export const curveLines = (
   }
   return path;
 };
+
+const getPointAtT = (from: Vector, to: Vector, t: number): Vector => {
+  const x = (1 - t) * from.x + t * to.x;
+  const y = (1 - t) * from.y + t * to.y;
+
+  return { x, y };
+};
+
+export const splitCurve = (
+  from: Vector,
+  c1: Vector,
+  c2: Vector,
+  to: Vector,
+  t: number
+): Array<Curve> => {
+  const helperPoints: Vector[] = [];
+
+  helperPoints.push(getPointAtT(from, c1, t));
+  helperPoints.push(getPointAtT(c1, c2, t));
+  helperPoints.push(getPointAtT(c2, to, t));
+
+  helperPoints.push(getPointAtT(helperPoints[0], helperPoints[1], t));
+  helperPoints.push(getPointAtT(helperPoints[1], helperPoints[2], t));
+
+  helperPoints.push(getPointAtT(helperPoints[3], helperPoints[4], t));
+
+  const curves = [
+    { c1: helperPoints[0], c2: helperPoints[3], to: helperPoints[5] },
+    { c1: helperPoints[4], c2: helperPoints[2], to },
+  ];
+
+  return curves;
+};
