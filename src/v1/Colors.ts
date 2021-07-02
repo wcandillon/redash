@@ -184,7 +184,7 @@ export const interpolateColor = (
   value: Animated.Adaptable<number>,
   config: ColorInterpolationConfig,
   colorSpace: "hsv" | "rgb" = "rgb"
-): Animated.Node<number> => {
+): Animated.Node<string> => {
   const { inputRange } = config;
   const outputRange = config.outputRange.map((c) =>
     typeof c === "number" ? c : (processColor(c) as number)
